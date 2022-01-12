@@ -9,7 +9,7 @@ func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{},
 		ResourcesMap: map[string]*schema.Resource{
-			"sealed_secret_raw_secret": resourceRawSecret(),
+			"sealedsecret_raw_secret": resourceRawSecret(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{},
 	}
