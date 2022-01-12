@@ -9,6 +9,7 @@ import (
 	ssv1alpha1 "github.com/bitnami-labs/sealed-secrets/pkg/apis/sealed-secrets/v1alpha1"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceRawSecret() *schema.Resource {
@@ -27,19 +28,24 @@ func resourceRawSecret() *schema.Resource {
 			"name": {
 				Type:        schema.TypeString,
 				Required:    true,
+				ForceNew:    true,
 				Description: "Name of the sealed secret",
 			},
 			"namespace": {
 				Type:        schema.TypeString,
 				Required:    true,
+				ForceNew:    true,
 				Description: "If present, the namespace scope for this request",
 			},
 			"scope": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				Default:      "strict",
-				Description:  "Set the scope of the sealed secret: strict, namespace-wide, cluster-wide (defaults to strict).",
-				ExactlyOneOf: []string{"strict", "namespace-wide", "cluster-wide"},
+				Type:        schema.TypeString,
+				Optional:    true,
+				ForceNew:    true,
+				Default:     "strict",
+				Description: "Set the scope of the sealed secret: strict, namespace-wide, cluster-wide (defaults to strict).",
+				ValidateFunc: validation.StringInSlice([]string{
+					"strict", "namespace-wide", "cluster-wide",
+				}, false),
 			},
 			"certificate": {
 				Type:        schema.TypeString,
