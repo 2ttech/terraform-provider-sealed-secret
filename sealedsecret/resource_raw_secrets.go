@@ -11,9 +11,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
-func resourceRawSecret() *schema.Resource {
+func resourceRawSecrets() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceRawSecretCreate,
+		CreateContext: resourceRawSecretsCreate,
 		ReadContext:   schema.NoopContext,
 		Delete:        schema.RemoveFromState,
 
@@ -46,31 +46,39 @@ func resourceRawSecret() *schema.Resource {
 				ForceNew:    true,
 				Description: "Public certificate to use for sealing secret.",
 			},
-			"value": {
-				Type:        schema.TypeString,
+			"values": {
+				Type:        schema.TypeMap,
 				Required:    true,
 				Sensitive:   true,
 				ForceNew:    true,
-				Description: "Secret value to seal.",
+				Description: "Map of secret values to seal.",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
-			"encrypted_value": {
-				Type:        schema.TypeString,
+			"encrypted_values": {
+				Type:        schema.TypeMap,
 				Computed:    true,
-				Description: "Encrypted secret value",
+				Description: "Encrypted secret values",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 		},
 	}
 }
 
-func resourceRawSecretCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceRawSecretsCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var (
 		sealingScope ssv1alpha1.SealingScope
 		err          error
 	)
 
+	encryptedValues := map[string]string{}
+
 	name := d.Get("name").(string)
 	namespace := d.Get("namespace").(string)
-	value := d.Get("value").(string)
+	values := d.Get("values").(map[string]interface{})
 	cert := d.Get("certificate").(string)
 	scope := d.Get("scope").(string)
 
@@ -84,17 +92,21 @@ func resourceRawSecretCreate(ctx context.Context, d *schema.ResourceData, m inte
 		return diag.FromErr(err)
 	}
 
-	buf := new(bytes.Buffer)
+	for k, v := range values {
+		buf := new(bytes.Buffer)
 
-	err = internal.EncryptSecretItem(buf, name, namespace, []byte(value), sealingScope, pubKey)
-	if err != nil {
-		return diag.FromErr(err)
+		err = internal.EncryptSecretItem(buf, name, namespace, []byte(v.(string)), sealingScope, pubKey)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		encryptedValues[k] = buf.String()
 	}
 
 	id := string(ssv1alpha1.EncryptionLabel(namespace, name, sealingScope))
 
 	d.SetId(id)
-	d.Set("encrypted_value", buf.String())
+	d.Set("encrypted_values", encryptedValues)
 
 	return nil
 }
