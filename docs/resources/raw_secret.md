@@ -3,12 +3,12 @@
 page_title: "sealedsecret_raw_secret Resource - terraform-provider-sealedsecret"
 subcategory: ""
 description: |-
-  
+  sealedsecret_raw_secret creates a sealed secret from value input. The encrypted value is available as encrypted_value. This is not marked as sensitive as it is encrypted and can therefore safely be passed around.
 ---
 
 # sealedsecret_raw_secret (Resource)
 
-
+`sealedsecret_raw_secret` creates a sealed secret from `value` input. The encrypted value is available as `encrypted_value`. This is not marked as sensitive as it is encrypted and can therefore safely be passed around.
 
 
 

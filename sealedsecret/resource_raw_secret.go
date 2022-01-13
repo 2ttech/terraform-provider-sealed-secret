@@ -13,6 +13,11 @@ import (
 
 func resourceRawSecret() *schema.Resource {
 	return &schema.Resource{
+		Description: "" +
+			"`sealedsecret_raw_secret` creates a sealed secret from `value` input. The encrypted " +
+			"value is available as `encrypted_value`. This is not marked as sensitive as it is " +
+			"encrypted and can therefore safely be passed around.",
+
 		CreateContext: resourceRawSecretCreate,
 		ReadContext:   schema.NoopContext,
 		Delete:        schema.RemoveFromState,

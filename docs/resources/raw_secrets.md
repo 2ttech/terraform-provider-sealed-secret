@@ -3,12 +3,12 @@
 page_title: "sealedsecret_raw_secrets Resource - terraform-provider-sealedsecret"
 subcategory: ""
 description: |-
-  
+  sealedsecret_raw_secrets creates a sealed secret for a map of inputs. This is a convenient resource to encrypt many secrets since it is not possible to iterate over sensitive values. Values are available as encrypted_values. This is not marked as sensitive as it is encrypted and can therefore safely be passed around and iterated over.
 ---
 
 # sealedsecret_raw_secrets (Resource)
 
-
+`sealedsecret_raw_secrets` creates a sealed secret for a map of inputs. This is a convenient resource to encrypt many secrets since it is not possible to iterate over sensitive values. Values are available as `encrypted_values`. This is not marked as sensitive as it is encrypted and can therefore safely be passed around and iterated over.
 
 
 
